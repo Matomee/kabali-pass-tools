@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^8.3.2"
+    "@cloudflare/vite-plugin": "^1.62.5",
+    "vite": "^8.3.2",
+    "wrangler": "^4.147.0"
   }
 }
