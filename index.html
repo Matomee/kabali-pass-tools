@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kabali Pass Tools (K-Pass) — Daily Extensions & Web Applications</title>
+    <meta
+      name="description"
+      content="Kabali Pass Tools (K-Pass): a curated spotlight of daily-use browser extensions and web applications, plus copy-paste ready pro userscripts."
+    />
+    <link rel="canonical" href="https://kabali-pass-tools.pages.dev/" />
+    <meta name="theme-color" content="#0b0908" />
+    <meta
+      name="keywords"
+      content="Kabali Pass Tools, K-Pass Tools, Kabali tools, browser extensions, userscripts, Tampermonkey scripts, daily productivity tools"
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0908'/%3E%3Crect x='5' y='5' width='54' height='54' rx='11' fill='none' stroke='%23f0442e' stroke-width='4'/%3E%3Ctext x='32' y='44' font-size='30' text-anchor='middle' fill='%23fffacd' font-family='sans-serif' font-weight='bold'%3EK%3C/text%3E%3C/svg%3E" />
+    <!-- OG Tags -->
+    <meta property="og:title" content="Kabali Pass Tools (K-Pass)" />
+    <meta property="og:description" content="Curated daily-use browser extensions, web applications and copy-paste pro userscripts." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kabali-pass-tools.pages.dev/" />
+    <meta property="og:image" content="https://kabali-pass-tools.pages.dev/og-cover.svg" />
+    <meta property="og:image:alt" content="Kabali Pass Tools — K-Pass" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kabali Pass Tools (K-Pass)" />
+    <meta name="twitter:description" content="Curated daily-use browser extensions, web applications and copy-paste pro userscripts." />
+    <meta name="twitter:image" content="https://kabali-pass-tools.pages.dev/og-cover.svg" />
+    <!-- End SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Kabali Pass Tools",
+      "alternateName": "K-Pass Tools",
+      "url": "https://kabali-pass-tools.pages.dev/",
+      "description": "Curated daily-use browser extensions, web applications and copy-paste pro userscripts.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kabali Pass Tools",
+        "alternateName": "K-Pass"
+      }
+    }
+    </script>
+    <!-- Font -->
+    <style>
+      @font-face {
+        font-family: 'After Saved';
+        src: url('/fonts/after-regular.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Header (fixed) -->
+    <header class="header" aria-label="Main">
+      <div class="header__inner">
+        <h1 class="header__title">
+          <i data-lucide="star" class="header__icon" aria-hidden="true"></i>K-Pass Tools<span class="sr-only"> — Kabali Pass Tools</span>
+        </h1>
+        <div class="header__actions">
+          <span class="header__favorite-count" aria-live="polite">0</span>
+          <button
+            class="header__favorite-toggle"
+            aria-pressed="false"
+            aria-label="Show only favorite tools"
+            title="Show only favorite tools"
+          >
+            <i data-lucide="grid" class="icon--sm" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Introduction">
+      <p class="hero__eyebrow"><span class="hero__dot" aria-hidden="true"></span>K-Pass · Featured extension</p>
+      <h2 class="hero__title">Every tab,<br /><span class="hero__ember">always awake.</span></h2>
+      <p class="hero__sub">One extension that keeps background tabs treated as active, so music and web apps never pause. Free on the Chrome Web Store, curated by Kabali Pass Tools.</p>
+      <div class="hero__stats" role="status" aria-live="polite">
+        <div class="hero__stat"><span class="hero__num" id="stat-tools">–</span><span class="hero__label" id="stat-tools-label">tools</span></div>
+        <div class="hero__stat"><span class="hero__num" id="stat-cats">–</span><span class="hero__label" id="stat-cats-label">categories</span></div>
+        <div class="hero__stat"><span class="hero__num" id="stat-favs">0</span><span class="hero__label">favorites</span></div>
+      </div>
+    </section>
+
+    <!-- Toolbar (sticky) -->
+    <section class="toolbar" aria-label="Toolbar">
+      <div class="toolbar__search">
+        <i data-lucide="search" class="toolbar__search-icon icon--sm" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="toolbar__search-input"
+          placeholder="Search tools..."
+          aria-label="Search tools"
+          aria-controls="tool-grid"
+          aria-live="polite"
+        />
+        <button type="button" class="toolbar__search-clear" aria-label="Clear search">
+          <i data-lucide="x" class="icon--sm" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="toolbar__filters" id="filter-pills" role="group" aria-label="Filter by category">
+        <!-- Pills render here via JS from tools data -->
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main">
+      <section class="grid__placeholder" id="tool-grid" aria-busy="true" role="grid">
+        <!-- Tool cards render here via JS -->
+      </section>
+    </main>
+
+    <!-- Userscripts -->
+    <section class="scripts" aria-label="Userscripts">
+      <div class="scripts__inner">
+        <p class="scripts__eyebrow"><span class="hero__dot" aria-hidden="true"></span>Userscripts · copy, paste, run</p>
+        <h2 class="scripts__title">Grab the <span class="hero__ember">source.</span></h2>
+        <p class="scripts__sub">Full code for both extensions below. Hit copy on the corner, paste into a new Tampermonkey script, save — done. No downloads, no installers.</p>
+        <div class="scripts__grid">
+          <article class="script-card" aria-labelledby="script-title-aa">
+            <div class="script-card__head">
+              <i data-lucide="pin" class="icon--md script-card__icon" aria-hidden="true"></i>
+              <div>
+                <h3 class="script-card__name" id="script-title-aa">Always Active — Pro</h3>
+                <p class="script-card__meta" id="script-meta-aa">Loading…</p>
+              </div>
+            </div>
+            <p class="script-card__desc">Tabs always report active, visible, focused and fullscreen. Background play, tab switches and ESC fullscreen-exits stay invisible to pages.</p>
+            <div class="script-card__codewrap">
+              <button type="button" class="script-card__copy" data-script="always-active" aria-label="Copy Always Active Pro source code">
+                <i data-lucide="copy" class="icon--xs" aria-hidden="true"></i><span>Copy</span>
+              </button>
+              <pre class="script-card__code" tabindex="0"><code id="script-code-aa">Loading source…</code></pre>
+            </div>
+          </article>
+          <article class="script-card" aria-labelledby="script-title-cp">
+            <div class="script-card__head">
+              <i data-lucide="clipboard" class="icon--md script-card__icon" aria-hidden="true"></i>
+              <div>
+                <h3 class="script-card__name" id="script-title-cp">Copy Paste Pro — Liberator</h3>
+                <p class="script-card__meta" id="script-meta-cp">Loading…</p>
+              </div>
+            </div>
+            <p class="script-card__desc">Re-enables copy, cut, paste, selection and right-click on hostile paywall pages — including late-injected blockers.</p>
+            <div class="script-card__codewrap">
+              <button type="button" class="script-card__copy" data-script="copy-paste" aria-label="Copy Copy Paste Pro source code">
+                <i data-lucide="copy" class="icon--xs" aria-hidden="true"></i><span>Copy</span>
+              </button>
+              <pre class="script-card__code" tabindex="0"><code id="script-code-cp">Loading source…</code></pre>
+            </div>
+          </article>
+        </div>
+        <div class="tm-banner">
+          <i data-lucide="puzzle" class="icon--md tm-banner__icon" aria-hidden="true"></i>
+          <div class="tm-banner__text">
+            <p class="tm-banner__title">Need Tampermonkey first?</p>
+            <p class="tm-banner__sub">Install the extension, create a new script, paste the code, save. Works in Chrome, Edge, Firefox and Safari.</p>
+          </div>
+          <a class="card__cta tm-banner__cta" href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener noreferrer">
+            <i data-lucide="download" class="icon--xs" aria-hidden="true"></i> Get Tampermonkey
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer__inner">
+        <p class="footer__text">
+          Curated with care · <i data-lucide="flame" class="icon--sm"
+            aria-hidden="true"></i> Kabali Pass Tools (K-Pass) · <a href="#" class="footer__link">Submit a Tool</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- App JavaScript -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

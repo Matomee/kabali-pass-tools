@@ -1,0 +1,11 @@
+/**
+ * Main Styles — K-Pass Tools Showcase
+ * Imports all component and base styles
+ */
+
+@import './variables.css';
+@import './reset.css';
+@import './grid.css';
+@import './cards.css';
+@import './ui.css';
+@import './animations.css';

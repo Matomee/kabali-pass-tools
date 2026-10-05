@@ -1,0 +1,2 @@
+Tool Name: Always active Window - Always Visible 
+url: https://chromewebstore.google.com/detail/always-active-window-alwa/ehllkhjndgnlokhomdlhgbineffifcbj?hl=en

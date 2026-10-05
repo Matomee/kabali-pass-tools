@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Copy Lab — Copy Paste Pro Test</title>
+<meta name="robots" content="noindex, follow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0908'/%3E%3Crect x='5' y='5' width='54' height='54' rx='11' fill='none' stroke='%23f0442e' stroke-width='4'/%3E%3C/svg%3E" />
+<style>
+  :root { --bg: #0b0908; --card: #151010; --text: #fffacd; --muted: #c9b696; --border: #352219; --red: #f0442e; --green: #3ddc84; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 32px 16px 64px; line-height: 1.5; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  h1 span { color: var(--red); }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .score { display: flex; gap: 12px; align-items: center; background-color: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
+  .row { display: flex; gap: 12px; align-items: flex-start; background-color: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+  .lamp { width: 14px; height: 14px; border-radius: 50%; background: #555; flex-shrink: 0; margin-top: 4px; }
+  .lamp.pass { background: var(--green); }
+  .lamp.fail { background: var(--red); }
+  .name { font-weight: 700; font-size: 14px; }
+  .detail { color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+  button { font: inherit; font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 9999px; border: 1px solid var(--red); background: var(--red); color: #fff; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--red); }
+  button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  #log { background: #000; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); min-height: 120px; max-height: 260px; overflow-y: auto; white-space: pre-wrap; }
+  #log .bad { color: var(--red); }
+  #log .good { color: var(--green); }
+  /* HOSTILE SITE SIMULATION: block selection via CSS like real paywalls do */
+  .paywall { user-select: none; -webkit-user-select: none; }
+  .paywall::selection { background: transparent; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Copy Lab <span>— hostile paywall drill</span></h1>
+  <p class="sub">This page fights back like a hostile site: preventDefault on copy/cut/paste/contextmenu/selectstart, Ctrl+C keydown killer, <b>oncopy</b> property handler, <b>user-select:none</b> CSS, plus a <b>late blocker injected at +2s</b>. Install <b>copy-paste-pro.user.js</b> first — every lamp must stay green.</p>
+  <div class="score"><span id="score">– / 8 PASS</span></div>
+  <div id="rows"></div>
+  <div class="actions">
+    <button id="run">Run all checks</button>
+    <button id="late" class="ghost">Inject late blocker now</button>
+  </div>
+  <p class="sub paywall" id="sample">Select this text with your mouse, press Ctrl+C, right-click anywhere. With the script, all of it works despite the paywall CSS on this paragraph.</p>
+  <div id="log" aria-live="polite"></div>
+</div>
+<script>
+(function () {
+  /* ===== HOSTILE BLOCKERS (bubble phase, like real sites) ===== */
+  var heard = { keydown: 0 };
+  ['copy', 'cut', 'paste', 'contextmenu', 'selectstart', 'dragstart'].forEach(function (t) {
+    document.addEventListener(t, function (e) { try { e.preventDefault(); } catch (x) {} }, false);
+    window.addEventListener(t, function (e) { try { e.preventDefault(); } catch (x) {} }, false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'v', 'a'].indexOf((e.key || '').toLowerCase()) !== -1) {
+      heard.keydown++;
+      try { e.preventDefault(); e.stopPropagation(); } catch (x) {}
+    }
+  }, false);
+  document.oncopy = function (e) { try { e.preventDefault(); } catch (x) {} };
+
+  function lateBlocker() {
+    document.addEventListener('copy', function (e) { try { e.preventDefault(); } catch (x) {} }, false);
+    document.oncopy = function (e) { try { e.preventDefault(); } catch (x) {} };
+    log('hostile late blocker injected (+2s / manual)', '');
+  }
+  setTimeout(lateBlocker, 2000);
+  document.getElementById('late').addEventListener('click', lateBlocker);
+
+  /* ===== SCOREBOARD ===== */
+  function fire(type, Ctor) {
+    var e;
+    try { e = new (Ctor || Event)(type, { bubbles: true, cancelable: true }); }
+    catch (x) { e = document.createEvent('Event'); e.initEvent(type, true, true); }
+    document.dispatchEvent(e);
+    return e;
+  }
+  function fireKey() {
+    var e;
+    try { e = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ctrlKey: true, key: 'c' }); }
+    catch (x) { e = document.createEvent('Event'); e.initEvent('keydown', true, true); }
+    document.dispatchEvent(e);
+    return e;
+  }
+
+  var checks = [
+    { id: 'p1', name: 'P1 · copy NOT prevented', test: function () { return fire('copy', window.ClipboardEvent).defaultPrevented === false; }, detail: function () { return 'copy defaultPrevented=false, page blocker never ran'; } },
+    { id: 'p2', name: 'P2 · paste NOT prevented', test: function () { return fire('paste', window.ClipboardEvent).defaultPrevented === false; }, detail: function () { return 'paste defaultPrevented=false'; } },
+    { id: 'p3', name: 'P3 · cut NOT prevented', test: function () { return fire('cut', window.ClipboardEvent).defaultPrevented === false; }, detail: function () { return 'cut defaultPrevented=false'; } },
+    { id: 'p4', name: 'P4 · contextmenu NOT prevented (right-click works)', test: function () { return fire('contextmenu').defaultPrevented === false; }, detail: function () { return 'contextmenu defaultPrevented=false'; } },
+    { id: 'p5', name: 'P5 · selectstart NOT prevented', test: function () { return fire('selectstart').defaultPrevented === false; }, detail: function () { return 'selectstart defaultPrevented=false'; } },
+    { id: 'p6', name: 'P6 · Ctrl+C keydown NOT killed', test: function () { var before = heard.keydown; var ev = fireKey(); return ev.defaultPrevented === false; }, detail: function () { return 'keydown defaultPrevented=false, hostile counter bypassed'; } },
+    { id: 'p7', name: 'P7 · user-select forced back to text', test: function () { try { return getComputedStyle(document.getElementById('sample')).userSelect === 'text'; } catch (e) { return false; } }, detail: function () { try { return 'computed user-select = ' + getComputedStyle(document.getElementById('sample')).userSelect; } catch (e) { return 'error'; } } },
+    { id: 'p8', name: 'P8 · oncopy property handler disarmed', test: function () { return !document.oncopy && !window.oncopy; }, detail: function () { return 'document.oncopy=' + document.oncopy + ' window.oncopy=' + window.oncopy; } }
+  ];
+
+  var rowsEl = document.getElementById('rows');
+  var logEl = document.getElementById('log');
+  function log(msg, cls) {
+    var line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = new Date().toLocaleTimeString() + '  ' + msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function render() {
+    var pass = 0;
+    rowsEl.innerHTML = '';
+    checks.forEach(function (c) {
+      var ok = false;
+      try { ok = !!c.test(); } catch (e) { ok = false; }
+      if (ok) pass++;
+      var row = document.createElement('div'); row.className = 'row';
+      var lamp = document.createElement('span'); lamp.className = 'lamp ' + (ok ? 'pass' : 'fail');
+      var body = document.createElement('div');
+      var nm = document.createElement('div'); nm.className = 'name';
+      nm.textContent = (ok ? 'PASS' : 'FAIL') + ' · ' + c.name;
+      var dt = document.createElement('div'); dt.className = 'detail'; dt.textContent = c.detail();
+      body.appendChild(nm); body.appendChild(dt);
+      row.appendChild(lamp); row.appendChild(body);
+      rowsEl.appendChild(row);
+    });
+    document.getElementById('score').textContent = pass + ' / ' + checks.length + ' PASS';
+    return pass;
+  }
+
+  document.getElementById('run').addEventListener('click', function () {
+    var p = render();
+    log(p === checks.length ? 'ALL GREEN — paywall defeated' : 'RED — ' + (checks.length - p) + ' vector(s) leaking', p === checks.length ? 'good' : 'bad');
+  });
+
+  render();
+  log('hostile blockers armed (bubble phase + oncopy + CSS + late +2s). Install the script, then Run all checks.', '');
+})();
+</script>
+</body>
+</html>

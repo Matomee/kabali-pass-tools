@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kabali-pass-tools.pages.dev/sitemap.xml

@@ -1,0 +1,125 @@
+/**
+ * CSS Custom Properties — K-Pass Tools Showcase
+ * Colors, typography, spacing, grid, transitions
+ */
+
+:root {
+  /* ==== Colors: ember-on-black ==== */
+  --color-primary: #f0442e;
+  --color-primary-deep: #b81104;
+  --color-primary-hover: #ff5c40;
+  --color-ember: #ff7a1a;
+  --color-cream: #fffacd;
+  --color-bg: #0b0908;
+  --color-bg-card: #151010;
+  --color-text: #fffacd;
+  --color-text-muted: #c9b696;
+  --color-border: #352219;
+  --color-border-hot: #b81104;
+  --color-focus: #ff5140;
+  --color-bg-search: #1a1311;
+  --color-bg-filter: #211915;
+
+  /* ==== Typography ==== */
+  --font-primary: 'After Saved', 'Inter', system-ui, sans-serif;
+  --font-stack: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-code: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+
+  --fs-fluid-xxs: clamp(0.625rem, 0.55rem + 0.31vw, 0.6875rem);
+  --fs-fluid-xs: clamp(0.75rem, 0.65rem + 0.42vw, 0.75rem);
+  --fs-fluid-sm: clamp(0.8125rem, 0.7rem + 0.47vw, 0.875rem);
+  --fs-fluid-base: clamp(0.875rem, 0.76rem + 0.58vw, 1rem);
+  --fs-fluid-lg: clamp(1.0625rem, 0.88rem + 0.83vw, 1.25rem);
+  --fs-fluid-xl: clamp(1.25rem, 1.05rem + 1.11vw, 1.5rem);
+  --fs-fluid-2xl: clamp(1.25rem, 1.1rem + 1vw, 1.5rem);
+  --fs-fluid-3xl: clamp(1.5rem, 1.25rem + 1.6vw, 2.5rem);
+  --fs-fluid-4xl: clamp(1.875rem, 1.4rem + 2.4vw, 3rem);
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ==== Spacing ==== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+
+  /* ==== Grid ==== */
+  --grid-gap: 16px;
+  --grid-gap-mobile: 12px;
+  --grid-rows: 120px;
+  --grid-rows-mobile: 140px;
+  --grid-rows-tablet: 130px;
+
+  /* ==== Layout system: one source of truth ==== */
+  --header-h: 72px;
+  --gutter: 32px;
+  --container: 1400px;
+
+  /* ==== Border Radius ==== */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-full: 9999px;
+
+  /* ==== Shadows ==== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  /* ==== Transitions ==== */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* ==== Breakpoints ==== */
+  --bp-mobile: 639px;
+  --bp-tablet: 1023px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-base: 0ms;
+    --transition-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+/* Layout system: tighter gutters on small screens */
+@media (max-width: 639px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Visibility Lab — Always Active Pro Test</title>
+<meta name="robots" content="noindex, follow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0908'/%3E%3Crect x='5' y='5' width='54' height='54' rx='11' fill='none' stroke='%23f0442e' stroke-width='4'/%3E%3C/svg%3E" />
+<style>
+  :root { --bg: #0b0908; --card: #151010; --text: #fffacd; --muted: #c9b696; --border: #352219; --red: #f0442e; --deep: #b81104; --green: #3ddc84; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 32px 16px 64px; line-height: 1.5; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  h1 span { color: var(--red); }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .score { display: flex; gap: 12px; align-items: center; background-color: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
+  .row { display: flex; gap: 12px; align-items: flex-start; background-color: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+  .lamp { width: 14px; height: 14px; border-radius: 50%; background: #555; flex-shrink: 0; margin-top: 4px; }
+  .lamp.pass { background: var(--green); }
+  .lamp.fail { background: var(--red); }
+  .lamp.skip { background: #8a8a8a; }
+  .name { font-weight: 700; font-size: 14px; }
+  .detail { color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace; word-break: break-all; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+  button { font: inherit; font-size: 14px; font-weight: 600; padding: 10px 18px; border-radius: 9999px; border: 1px solid var(--red); background: var(--red); color: #fff; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--red); }
+  button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+  #log { background: #000; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); min-height: 120px; max-height: 260px; overflow-y: auto; white-space: pre-wrap; }
+  #log .bad { color: var(--red); }
+  #log .good { color: var(--green); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Visibility Lab <span>— high-security drill</span></h1>
+  <p class="sub">Install <b>always-active-pro.user.js</b> in Tampermonkey first. Then background this tab, switch tabs, fullscreen + ESC. Every lamp must stay green. Without the script, backgrounding turns lamps red.</p>
+  <div class="score"><span id="score">0 / 8 PASS</span></div>
+  <div id="rows"></div>
+  <div class="actions">
+    <button id="fire">Fire synthetic events at page</button>
+    <button id="fs" class="ghost">Enter fullscreen (then press ESC)</button>
+    <button id="escdrill" class="ghost">Run ESC-trap drill</button>
+    <button id="recheck" class="ghost">Re-check now</button>
+  </div>
+  <div id="log" aria-live="polite"></div>
+</div>
+<script>
+(function () {
+  var counts = { visibilitychange: 0, blur: 0, focusout: 0, mouseleave: 0, pointerleave: 0, pagehide: 0, pageshow: 0, freeze: 0, resume: 0, fullscreenchange: 0 };
+  Object.keys(counts).forEach(function (type) {
+    document.addEventListener(type, function () { counts[type]++; render(); }, false);
+    window.addEventListener(type, function () { counts[type]++; render(); }, false);
+  });
+
+  var checks = [
+    { id: 'v1a', name: 'V1 · document.hidden === false', test: function () { return document.hidden === false; }, detail: function () { return 'hidden = ' + document.hidden; } },
+    { id: 'v1b', name: 'V1 · visibilityState === visible', test: function () { return document.visibilityState === 'visible'; }, detail: function () { return 'visibilityState = ' + document.visibilityState; } },
+    { id: 'v4', name: 'V4 · document.hasFocus() === true', test: function () { try { return document.hasFocus() === true; } catch (e) { return false; } }, detail: function () { try { return 'hasFocus() = ' + document.hasFocus(); } catch (e) { return 'threw'; } } },
+    { id: 'v2', name: 'V2/V3/V5 · page received 0 gated events', test: function () { return Object.keys(counts).every(function (k) { return counts[k] === 0; }); }, detail: function () { return JSON.stringify(counts); } },
+    { id: 'v6', name: 'V6 · no fullscreenchange reached page', test: function () { return counts.fullscreenchange === 0; }, detail: function () { return 'fullscreenchange heard = ' + counts.fullscreenchange; } },
+    { id: 'v7', name: 'V7 · fullscreenElement spoofable', test: function () { return 'fullscreenElement' in document; }, detail: function () { return 'fullscreenElement = ' + String(document.fullscreenElement).slice(0, 60); } },
+    { id: 'v10', name: 'V10 · hasFocus.toString looks native', test: function () { try { return /\[native code\]/.test(document.hasFocus.toString()); } catch (e) { return false; } }, detail: function () { try { return document.hasFocus.toString().slice(0, 80); } catch (e) { return 'threw'; } } },
+    { id: 'v12', name: 'V12 · hidden getter still spoofed after 10s', test: function () { try { var d = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden'); return !!d && typeof d.get === 'function' && d.get.call(document) === false; } catch (e) { return false; } }, detail: function () { return 'getter=' + (function () { try { return typeof Object.getOwnPropertyDescriptor(Document.prototype, 'hidden').get; } catch (e) { return 'n/a'; } })(); } },
+    { id: 'v14', name: 'V14 · ESC trap bypassed while real fullscreen active', test: function () { return window.__escDrill === 'pass'; }, skipIf: function () { return window.__escDrill !== 'pass' && window.__escDrill !== 'fail'; }, detail: function () { return 'drill=' + (window.__escDrill || 'not run — press Run ESC-trap drill'); } },
+    { id: 'v15', name: 'V15 · pointerLockElement spoofable', test: function () { return 'pointerLockElement' in document; }, detail: function () { return 'pointerLockElement = ' + String(document.pointerLockElement).slice(0, 60); } }
+  ];
+
+  var rowsEl = document.getElementById('rows');
+  var logEl = document.getElementById('log');
+  function log(msg, cls) {
+    var line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = new Date().toLocaleTimeString() + '  ' + msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  var lastSkipped = 0;
+  function render() {
+    var pass = 0, skipped = 0;
+    rowsEl.innerHTML = '';
+    checks.forEach(function (c) {
+      var skip = false;
+      try { skip = !!(c.skipIf && c.skipIf()); } catch (e) { skip = false; }
+      var ok = false;
+      if (!skip) { try { ok = !!c.test(); } catch (e) { ok = false; } }
+      if (ok) pass++;
+      if (skip) skipped++;
+      var row = document.createElement('div');
+      row.className = 'row';
+      var lamp = document.createElement('span');
+      lamp.className = 'lamp ' + (skip ? 'skip' : (ok ? 'pass' : 'fail'));
+      var body = document.createElement('div');
+      var nm = document.createElement('div');
+      nm.className = 'name';
+      nm.textContent = (skip ? 'SKIP' : (ok ? 'PASS' : 'FAIL')) + ' · ' + c.name;
+      var dt = document.createElement('div');
+      dt.className = 'detail';
+      try { dt.textContent = c.detail(); } catch (e) { dt.textContent = 'error'; }
+      body.appendChild(nm);
+      body.appendChild(dt);
+      row.appendChild(lamp);
+      row.appendChild(body);
+      rowsEl.appendChild(row);
+    });
+    document.getElementById('score').textContent = pass + ' / ' + checks.length + ' PASS' + (skipped ? ' · ' + skipped + ' SKIP' : '');
+    lastSkipped = skipped;
+    return pass;
+  }
+
+  document.getElementById('fire').addEventListener('click', function () {
+    ['visibilitychange', 'blur', 'focusout', 'mouseleave', 'pointerleave', 'pagehide', 'pageshow', 'freeze', 'resume'].forEach(function (t) {
+      document.dispatchEvent(new Event(t));
+      window.dispatchEvent(new Event(t));
+    });
+    log('fired synthetic gated events at page (capture firewall should eat them)', '');
+    var p = render();
+    // SKIP lamps (e.g. V14 before its drill) are neutral, never failures.
+    var clean = (p + lastSkipped === checks.length);
+    log(clean ? 'ALL GREEN after synthetic fire' : 'RED — firewall leaked!', clean ? 'good' : 'bad');
+  });
+
+  document.getElementById('fs').addEventListener('click', function () {
+    var el = document.documentElement;
+    try {
+      var p = el.requestFullscreen ? el.requestFullscreen() : null;
+      if (p && p.catch) p.catch(function (e) { log('fullscreen request denied: ' + e, 'bad'); });
+      log('requested fullscreen — now press ESC, watch fullscreenchange counter', '');
+    } catch (e) { log('fullscreen error: ' + e, 'bad'); }
+  });
+
+  document.getElementById('recheck').addEventListener('click', function () { render(); });
+
+  document.addEventListener('visibilitychange', function () { log('PAGE SAW visibilitychange (should never happen with script)', 'bad'); });
+  window.addEventListener('blur', function () { log('PAGE SAW blur (should never happen with script)', 'bad'); });
+  document.addEventListener('fullscreenchange', function () { log('PAGE SAW fullscreenchange (should never happen with script)', 'bad'); });
+  // Exam-style ESC trap mimic (bubble phase): flags the attempt + blocks the exit.
+  var escHeard = 0;
+  document.addEventListener('keydown', function (e) {
+    if ((e.key || '') === 'Escape' || e.keyCode === 27) {
+      escHeard++;
+      try { e.preventDefault(); } catch (x) {}
+    }
+  }, false);
+
+  document.getElementById('escdrill').addEventListener('click', function () {
+    function realFS() {
+      try { return Math.abs(window.innerHeight - window.screen.height) < 2; } catch (e) { return false; }
+    }
+    if (realFS()) { window.__escDrill = undefined; log('viewport already fullscreen-like — drill SKIP here', ''); render(); return; }
+    var before = escHeard;
+    var p = null;
+    try { p = document.documentElement.requestFullscreen ? document.documentElement.requestFullscreen() : null; }
+    catch (e) { p = null; }
+    function afterReq() {
+      setTimeout(function () {
+        if (!realFS()) { window.__escDrill = undefined; log('real fullscreen not granted in this browser — drill SKIP (do it manually headed)', ''); render(); return; }
+        document.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Escape', keyCode: 27 }));
+        setTimeout(function () {
+          try { if (document.exitFullscreen) { var x = document.exitFullscreen(); if (x && x.catch) x.catch(function () {}); } } catch (e) {}
+          if (escHeard === before) { window.__escDrill = 'pass'; log('ESC drill PASS — page trap never saw the key', 'good'); }
+          else { window.__escDrill = 'fail'; log('ESC drill FAIL — page heard ESC', 'bad'); }
+          render();
+        }, 300);
+      }, 500);
+    }
+    if (p && p.then) { p.then(afterReq, function () { window.__escDrill = undefined; log('fullscreen denied — drill SKIP', ''); render(); }); }
+    else { afterReq(); }
+  });
+
+  setInterval(render, 1000);
+  render();
+  log('lab ready. Install the userscript, then background / switch / fullscreen+ESC this tab.', '');
+})();
+</script>
+</body>
+</html>

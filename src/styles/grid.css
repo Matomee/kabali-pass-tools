@@ -1,0 +1,100 @@
+/**
+ * Bento Grid Layout — K-Pass Tools
+ * CSS Grid with asymmetric card sizes and responsive breakpoints
+ */
+
+/* Base grid container - targets both .grid and #tool-grid */
+.grid,
+#tool-grid,
+.grid__placeholder {
+  display: grid;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-4) var(--gutter) 40px;
+  gap: var(--grid-gap);
+  grid-auto-rows: minmax(var(--grid-rows), auto);
+  grid-auto-flow: dense;
+}
+
+/* Desktop: 4 columns */
+@media (min-width: 1024px) {
+  .grid,
+  #tool-grid,
+  .grid__placeholder {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .grid,
+  #tool-grid,
+  .grid__placeholder {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: var(--grid-rows-tablet);
+  }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 639px) {
+  .grid,
+  #tool-grid,
+  .grid__placeholder {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: var(--grid-gap-mobile);
+    padding: var(--space-3) var(--gutter) var(--space-8);
+  }
+}
+
+/* Tool card size variants via grid span */
+.card--large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.card--wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+.card--tall {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+.card--standard {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+/* Mobile: allow all cards to be full-width in 1 column */
+@media (max-width: 639px) {
+  .card--large,
+  .card--wide,
+  .card--tall,
+  .card--standard {
+    grid-column: span 1;
+    grid-row: auto;
+    min-height: var(--grid-rows-mobile);
+  }
+}
+
+/* Tablet: wide + large span 2 columns */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .card--wide,
+  .card--large {
+    grid-column: span 2;
+  }
+}
+
+/* Single spotlight card: center it (scoped to tool cards so the
+   empty-state keeps its full-width 1 / -1 span) */
+@media (min-width: 1024px) {
+  #tool-grid > .tool-card:only-child {
+    grid-column: 2 / span 2;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  #tool-grid > .tool-card:only-child {
+    grid-column: 1 / span 2;
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "tools": [
+    {
+      "id": "always-active-window",
+      "name": "Always Active Window - Always Visible",
+      "description": "Keeps any tab treated as active by spoofing visibility state, so music and web apps keep playing in background tabs. Enable per site with one click.",
+      "category": "utilities",
+      "tags": ["chrome", "extension", "always-on-top", "background-tabs", "visibility"],
+      "url": "https://chromewebstore.google.com/detail/always-active-window-alwa/ehllkhjndgnlokhomdlhgbineffifcbj?hl=en",
+      "iconName": "pin",
+      "cardSize": "wide",
+      "featured": true
+    }
+  ],
+
+  "categories": [
+    "utilities"
+  ]
+}

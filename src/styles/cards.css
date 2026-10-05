@@ -1,0 +1,237 @@
+/**
+ * Tool Card Components — K-Pass Tools
+ * Asymmetric cards with size variants, hover states, and favorite toggles
+ */
+
+.card {
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: 18px;
+  padding: 20px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-fast);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+
+
+/* Icon in rounded brand tile */
+.card__icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(184, 17, 4, 0.12);
+  border: 1px solid rgba(240, 68, 46, 0.25);
+  margin-bottom: var(--space-3);
+  flex-shrink: 0;
+}
+
+.card__icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Name */
+.card__name {
+  font-family: var(--font-stack);
+  font-size: var(--fs-fluid-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.25;
+  margin-bottom: var(--space-1);
+  overflow: hidden;
+  line-clamp: 2;
+  flex-shrink: 0;
+}
+
+/* Description */
+.card__description {
+  font-size: var(--fs-fluid-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  overflow: hidden;
+  line-clamp: 3;
+  margin-bottom: var(--space-3);
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+/* Category pill */
+.card__category {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-fluid-xs);
+  padding: var(--space-1) var(--space-2);
+  background-color: rgba(240, 68, 46, 0.16);
+  color: var(--color-primary);
+  border: 1px solid rgba(240, 68, 46, 0.35);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-3);
+  white-space: nowrap;
+}
+
+/* Favorite button - top-right corner */
+.card__favorite {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: rgba(24, 16, 14, 0.92);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: transform var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.card__favorite:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.card__favorite[aria-pressed="true"] {
+  opacity: 1;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* Hit area for favorite */
+.card__favorite-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Featured card (large) gets extra styles */
+.card--large {
+  padding: var(--space-6);
+}
+
+.card--large .card__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--space-4);
+}
+
+.card--large .card__name {
+  font-size: var(--fs-fluid-2xl);
+  line-clamp: 3;
+}
+
+.card--large .card__description {
+  line-clamp: 4;
+}
+
+.card--large .card__category {
+  font-size: var(--fs-fluid-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Large card: tags section */
+.card--large .card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  align-items: center;
+}
+
+.card__tag {
+  font-size: var(--fs-fluid-xxs);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-bg-filter);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* Footer row - CTA pinned to corner */
+.card__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-stack);
+  font-size: var(--fs-fluid-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: 10px 18px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+}
+
+.card__cta:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.card__cta:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.card__cta svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Landscape (wide) cards: roomier type, CTA bottom-right */
+.card--wide .card__name {
+  font-size: var(--fs-fluid-xl);
+}
+
+.card--wide .card__description {
+  line-clamp: 2;
+  max-width: 90%;
+}
+
+.card--wide .card__footer {
+  justify-content: flex-end;
+}
+
+/* Loading state */
+.loading {
+  aspect-ratio: 1;
+  background: var(--color-bg);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+}
